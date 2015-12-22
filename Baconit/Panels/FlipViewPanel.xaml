@@ -125,6 +125,7 @@
                                                     Text="Save image"
                                                     Visibility="{Binding ShowSaveImageMenu}" />
                                     <MenuFlyoutSeparator />
+                                    <MenuFlyoutItem Click="GoToUser_Click" Text="Go to user" />
                                     <MenuFlyoutItem Click="GoToSubreddit_Click" Text="Go to subreddit" />
                                 </MenuFlyout>
                             </FlyoutBase.AttachedFlyout>
@@ -406,6 +407,14 @@
                                 <TextBlock FontSize="15"
                                            Foreground="#999999"
                                            Text="reply" />
+                            </Grid>
+                            <Grid Margin="-4,-4,-4,-13"
+                                  Background="#01000000"
+                                  Padding="4,4,14,13"
+                                  Tapped="CommentUser_Tapped">
+                                <TextBlock FontSize="15"
+                                           Foreground="#999999"
+                                           Text="user" />
                             </Grid>
                             <Grid Margin="-4,-4,-4,-13"
                                   Background="#01000000"

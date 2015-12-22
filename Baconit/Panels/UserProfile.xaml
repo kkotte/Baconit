@@ -1,0 +1,73 @@
+﻿<UserControl x:Class="Baconit.Panels.UserProfile"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:helperControls="using:Baconit.HelperControls"
+             xmlns:local="using:Baconit.Panels"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             d:DesignHeight="300"
+             d:DesignWidth="400"
+             mc:Ignorable="d">
+
+    <Grid x:Name="ui_contentRoot" Background="{ThemeResource SystemControlBackgroundAccentBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="113*" />
+            <RowDefinition Height="187*" />
+        </Grid.RowDefinitions>
+        <Grid Grid.RowSpan="2" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <StackPanel x:Name="ui_titleHeaderContainer" Background="{ThemeResource SystemControlBackgroundAccentBrush}">
+                <!--  Name block  -->
+                <TextBlock x:Name="ui_userName"
+                           Margin="12,12,12,0"
+                           FontSize="24"
+                           Text="quinbd" />
+
+                <StackPanel Orientation="Horizontal">
+                    <Grid Margin="12,6,0,6" Background="#BD9631">
+                        <TextBlock Margin="6"
+                                   VerticalAlignment="Center"
+                                   Text="Has Gold" />
+                    </Grid>
+
+
+                    <Viewbox Width="15" Margin="12,12,6,12">
+                        <SymbolIcon Symbol="Contact" />
+                    </Viewbox>
+                    <TextBlock VerticalAlignment="Center" Text="53 days old" />
+
+                    <Viewbox Width="15" Margin="12,12,6,12">
+                        <SymbolIcon Symbol="Link" />
+                    </Viewbox>
+                    <TextBlock VerticalAlignment="Center" Text="38,348" />
+
+                    <Viewbox Width="15" Margin="12,12,6,12">
+                        <SymbolIcon Symbol="Comment" />
+                    </Viewbox>
+                    <TextBlock VerticalAlignment="Center" Text="38,348" />
+                </StackPanel>
+            </StackPanel>
+
+            <Grid Grid.Row="1" Background="{StaticResource BaconitAccentColorLevel1Brush}">
+                <Pivot>
+                    <PivotItem Header="POSTS">
+                        <TextBlock Text="Pivot 1" />
+                    </PivotItem>
+                    <PivotItem Header="COMMENTS">
+                        <TextBlock Text="Pivot 2" />
+                    </PivotItem>
+                    <PivotItem Header="GUILDED">
+                        <TextBlock Text="Pivot 3" />
+                    </PivotItem>
+                </Pivot>
+            </Grid>
+        </Grid>
+
+        <helperControls:LoadingOverlay x:Name="ui_loadingOverlay" Grid.RowSpan="2" />
+
+    </Grid>
+</UserControl>

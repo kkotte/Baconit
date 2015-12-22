@@ -488,6 +488,16 @@ namespace Baconit.Panels
             App.BaconMan.TelemetryMan.ReportEvent(this, "CopyLinkTapped");
         }
 
+        private void ViewUser_Click(object sender, RoutedEventArgs e)
+        {
+            // Get the post 
+            Post post = (sender as FrameworkElement).DataContext as Post;
+            Dictionary<string, object> args = new Dictionary<string, object>();
+            args.Add(PanelManager.NAV_ARGS_USER_NAME, post.Author);
+            m_host.Navigate(typeof(UserProfile), post.Author, args);
+            App.BaconMan.TelemetryMan.ReportEvent(this, "SubredditNavToUser");
+        }
+
         private void SubredditHeader_Tapped(object sender, TappedRoutedEventArgs e)
         {
             m_host.ToggleMenu(true);
@@ -832,6 +842,11 @@ namespace Baconit.Panels
             // resizing when we hit the actualwidth.
             double panelSize = ui_splitView.ActualWidth - 10 < 380 ? ui_splitView.ActualWidth - 10 : 380;
             ui_splitView.OpenPaneLength = panelSize;
+        }
+
+        private void MenuFlyoutItem_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

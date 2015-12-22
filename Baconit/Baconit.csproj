@@ -226,6 +226,9 @@
     <Compile Include="Panels\SubmitPost.xaml.cs">
       <DependentUpon>SubmitPost.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Panels\UserProfile.xaml.cs">
+      <DependentUpon>UserProfile.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Panels\WelcomePanel.xaml.cs">
       <DependentUpon>WelcomePanel.xaml</DependentUpon>
     </Compile>
@@ -462,6 +465,10 @@
     <Page Include="Panels\SubredditPanel.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Panels\UserProfile.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Panels\WelcomePanel.xaml">
       <Generator>MSBuild:Compile</Generator>
