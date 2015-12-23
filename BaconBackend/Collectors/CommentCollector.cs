@@ -24,7 +24,9 @@ namespace BaconBackend.Collectors
         public class CommentCollectorContext
         {
             public Post post;
+            public User user;
             public string forceComment;
+            public string UniqueId;
         }
 
         /// <summary>
@@ -34,47 +36,76 @@ namespace BaconBackend.Collectors
         /// <returns></returns>
         public static CommentCollector GetCollector(Post post, BaconManager baconMan, string forceComment = null)
         {
-            string uniqueId = post.Id + (String.IsNullOrWhiteSpace(forceComment) ? String.Empty : forceComment) + post.CommentSortType;
             CommentCollectorContext context = new CommentCollectorContext() { forceComment = forceComment, post = post };
-            return (CommentCollector)Collector<Comment>.GetCollector(typeof(CommentCollector), uniqueId, context, baconMan);
+            context.UniqueId = post.Id + (String.IsNullOrWhiteSpace(forceComment) ? String.Empty : forceComment) + post.CommentSortType;
+            return (CommentCollector)Collector<Comment>.GetCollector(typeof(CommentCollector), context.UniqueId, context, baconMan);
+        }
+
+        /// <summary>
+        /// Returns a collector for the given type. If the collector doesn't exist one will be created.
+        /// </summary>
+        /// <param name="subreddit"></param>
+        /// <returns></returns>
+        public static CommentCollector GetCollector(User user, BaconManager baconMan)
+        {
+            CommentCollectorContext context = new CommentCollectorContext() { user = user };
+            context.UniqueId = "t2_"+user.Id;
+            return (CommentCollector)Collector<Comment>.GetCollector(typeof(CommentCollector), context.UniqueId, context, baconMan);
         }
 
         //
         // Private vars
         //
         Post m_post = null;
+        User m_user = null;
         BaconManager m_baconMan;
 
         public CommentCollector(CommentCollectorContext context, BaconManager baconMan)
-            : base(baconMan, context.post.Id)
+            : base(baconMan, context.UniqueId)
         {
             // Set the vars
             m_baconMan = baconMan;
             m_post = context.post;
+            m_user = context.user;
 
-            string postUrl = null;
+            string commentBaseUrl = "";
             string optionalParams = null;
-            // See if it a force comment
-            if (!String.IsNullOrWhiteSpace(context.forceComment))
-            {
-                // Set a unique id for this request
-                SetUniqueId(m_post.Id + context.forceComment);
+            bool hasEmptyRoot = true;
+            bool takeFirstArray = false;
 
-                // Make the url
-                postUrl = $"{context.post.Permalink}{context.forceComment}.json";
-                optionalParams = "context=3";
+            if (m_post != null)
+            {
+                // See if it a force comment
+                if (!String.IsNullOrWhiteSpace(context.forceComment))
+                {
+                    // Set a unique id for this request
+                    SetUniqueId(m_post.Id + context.forceComment);
+
+                    // Make the url
+                    commentBaseUrl = $"{context.post.Permalink}{context.forceComment}.json";
+                    optionalParams = "context=3";
+                }
+                else
+                {
+                    // Get the post url
+                    commentBaseUrl = $"/r/{context.post.Subreddit}/comments/{context.post.Id}.json";
+
+                    optionalParams = $"sort={ConvertSortToUrl(m_post.CommentSortType)}";
+                }
+
+                hasEmptyRoot = true;
+                takeFirstArray = false;
             }
             else
             {
-                // Get the post url
-                postUrl = $"/r/{context.post.Subreddit}/comments/{context.post.Id}.json";
-
-                optionalParams = $"sort={ConvertSortToUrl(m_post.CommentSortType)}";
+                commentBaseUrl = $"user/{m_user.Name}/comments/.json";
+                hasEmptyRoot = false;
+                takeFirstArray = true;
             }
 
             // Make the helper, we need to ask it to make a fake root and not to take the
             // first element, the second element is the comment tree.
-            InitListHelper(postUrl, true, false, optionalParams);
+            InitListHelper(commentBaseUrl, hasEmptyRoot, takeFirstArray, optionalParams);
         }
 
         /// <summary>
@@ -129,7 +160,7 @@ namespace BaconBackend.Collectors
                 comment.AuthorFlairText = WebUtility.HtmlDecode(comment.AuthorFlairText);
 
                 // Set if this post is from the op
-                comment.IsCommentFromOp = comment.Author.Equals(m_post.Author);
+                comment.IsCommentFromOp = m_post != null && comment.Author.Equals(m_post.Author);
             }
         }
 

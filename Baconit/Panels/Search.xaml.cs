@@ -268,7 +268,7 @@ namespace Baconit.Panels
         {
             await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
-                if (e.State == CollectorState.Idle || e.State == CollectorState.Error)
+                if (e.State == CollectorState.Idle || e.State == CollectorState.Error || e.State == CollectorState.FullyExtended)
                 {
                     HideProgressBar(SearchResultTypes.Subreddit);
                 }
@@ -409,7 +409,7 @@ namespace Baconit.Panels
         {
             await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
-                if (e.State == CollectorState.Idle || e.State == CollectorState.Error)
+                if (e.State == CollectorState.Idle || e.State == CollectorState.Error || e.State == CollectorState.FullyExtended)
                 {
                     HideProgressBar(SearchResultTypes.Post);
                 }

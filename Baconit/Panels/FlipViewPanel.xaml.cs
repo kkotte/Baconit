@@ -59,7 +59,7 @@ namespace Baconit.Panels
         /// <summary>
         /// The collector backing this flip view
         /// </summary>
-        SubredditCollector m_collector;
+        PostCollector m_collector;
 
         /// <summary>
         /// A reference to the main panel host.
@@ -223,7 +223,7 @@ namespace Baconit.Panels
                 }
 
                 // Get the collector and register for updates.
-                m_collector = SubredditCollector.GetCollector(m_subreddit, App.BaconMan, m_currentSort, m_currentSortTime, forcePostId);
+                m_collector = PostCollector.GetCollector(m_subreddit, App.BaconMan, m_currentSort, m_currentSortTime, forcePostId);
                 m_collector.OnCollectionUpdated += Collector_OnCollectionUpdated;
 
                 // Kick off an update of the subreddits if needed.

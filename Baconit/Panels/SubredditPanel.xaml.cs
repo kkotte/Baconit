@@ -35,7 +35,7 @@ namespace Baconit.Panels
         //
         bool m_isVisible = false;
         Subreddit m_subreddit;
-        SubredditCollector m_collector;
+        PostCollector m_collector;
         IPanelHost m_host;
         ObservableCollection<Post> m_postsLists = new ObservableCollection<Post>();
         SortTypes m_currentSortType;
@@ -161,7 +161,7 @@ namespace Baconit.Panels
             SetCurrentTimeSort(sortTimeType);
 
             // Get the collector and register for updates.
-            m_collector = SubredditCollector.GetCollector(m_subreddit, App.BaconMan, m_currentSortType, m_currentSortTimeType);
+            m_collector = PostCollector.GetCollector(m_subreddit, App.BaconMan, m_currentSortType, m_currentSortTimeType);
             m_collector.OnCollectorStateChange += Collector_OnCollectorStateChange;
             m_collector.OnCollectionUpdated += Collector_OnCollectionUpdated;
 
@@ -205,7 +205,7 @@ namespace Baconit.Panels
             }
 
             // Show no posts if nothing was loaded
-            if (args.State == CollectorState.Idle)
+            if (args.State == CollectorState.Idle || args.State == CollectorState.FullyExtended)
             {
                 bool postLoaded = m_collector.GetCurrentPosts().Count != 0;
                 await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>

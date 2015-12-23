@@ -12,17 +12,19 @@ using Windows.UI.Xaml.Media;
 
 namespace BaconBackend.Collectors
 {
-    public class SubredditCollector : Collector<Post>
+    public class PostCollector : Collector<Post>
     {
         /// <summary>
         /// Used the pass the subreddit and sort through
         /// </summary>
-        public class SubredditContainer
+        public class PostCollectorContext
         {
+            public User User;
             public Subreddit subreddit;
             public SortTypes sortType;
             public SortTimeTypes sortTimeType;
             public string forcePostId;
+            public string UniqueId;
         }
 
         /// <summary>
@@ -30,29 +32,43 @@ namespace BaconBackend.Collectors
         /// </summary>
         /// <param name="subreddit"></param>
         /// <returns></returns>
-        public static SubredditCollector GetCollector(Subreddit subreddit, BaconManager baconMan, SortTypes sort = SortTypes.Hot, SortTimeTypes sortTime = SortTimeTypes.Week, string forcePostId = null)
+        public static PostCollector GetCollector(Subreddit subreddit, BaconManager baconMan, SortTypes sort = SortTypes.Hot, SortTimeTypes sortTime = SortTimeTypes.Week, string forcePostId = null)
         {
-            SubredditContainer container = new SubredditContainer() { subreddit = subreddit, sortType = sort, forcePostId = forcePostId, sortTimeType = sortTime };
+            PostCollectorContext container = new PostCollectorContext() { subreddit = subreddit, sortType = sort, forcePostId = forcePostId, sortTimeType = sortTime };
             // Make the uniqueId. If we have a force post add that also so we don't get an existing collector with the real subreddit.
-            string uniqueId = subreddit.Id + sort + sortTime + (String.IsNullOrWhiteSpace(forcePostId) ? String.Empty : forcePostId);
-            return (SubredditCollector)Collector<Post>.GetCollector(typeof(SubredditCollector), uniqueId, container, baconMan);
+            container.UniqueId = subreddit.Id + sort + sortTime + (String.IsNullOrWhiteSpace(forcePostId) ? String.Empty : forcePostId);
+            return (PostCollector)Collector<Post>.GetCollector(typeof(PostCollector), container.UniqueId, container, baconMan);
+        }
+
+        /// <summary>
+        /// Returns a collector for the given type. If the collector doesn't exist one will be created.
+        /// </summary>
+        /// <param name="subreddit"></param>
+        /// <returns></returns>
+        public static PostCollector GetCollector(User user, BaconManager baconMan, SortTypes sort = SortTypes.Hot, SortTimeTypes sortTime = SortTimeTypes.Week)
+        {
+            PostCollectorContext container = new PostCollectorContext() { User = user };
+            container.UniqueId = "t2"+user.Id;
+            return (PostCollector)Collector<Post>.GetCollector(typeof(PostCollector), container.UniqueId, container, baconMan);
         }
 
         //
         // Private vars
         //
+        User m_user = null;
         Subreddit m_subreddit = null;
         SortTypes m_sortType = SortTypes.Hot;
         SortTimeTypes m_sortTimeType = SortTimeTypes.Week;
         BaconManager m_baconMan;
 
-        public SubredditCollector(SubredditContainer subredditContainer, BaconManager baconMan)
-            : base(baconMan, subredditContainer.subreddit.Id + subredditContainer.sortType)
+        public PostCollector(PostCollectorContext collectorContext, BaconManager baconMan)
+            : base(baconMan, collectorContext.UniqueId)
         {
             // Set the vars
-            m_subreddit = subredditContainer.subreddit;
-            m_sortType = subredditContainer.sortType;
-            m_sortTimeType = subredditContainer.sortTimeType;
+            m_user = collectorContext.User;
+            m_subreddit = collectorContext.subreddit;
+            m_sortType = collectorContext.sortType;
+            m_sortTimeType = collectorContext.sortTimeType;
             m_baconMan = baconMan;
 
             // If we are doing a top sort setup the sort time
@@ -82,33 +98,43 @@ namespace BaconBackend.Collectors
                 }
             }
 
-            string subredditUrl = "";
+            string postCollectionUrl = "";
             bool hasEmptyRoot = false;
-            if (m_subreddit.DisplayName.ToLower() == "frontpage")
+
+
+            if (m_subreddit != null)
             {
-                // Special case for the front page
-                subredditUrl = $"/{SortTypeToString(m_sortType)}/.json";
-            }
-            else if(m_subreddit.DisplayName.ToLower() == "saved")
-            {
-                // Special case for the saved posts
-                subredditUrl = $"/user/{m_baconMan.UserMan.CurrentUser.Name}/saved/.json";
-            }
-            else if(!String.IsNullOrWhiteSpace(subredditContainer.forcePostId))
-            {
-                // We are only going to try to grab one specific post. This is used by search and inbox to 
-                // link to a post. Since we are doing so, we need to make the unique id something unique for this post so we don't get
-                // a cache. This should match the unique id we use to look up the subreddit above.
-                SetUniqueId(m_subreddit.Id + m_sortType + subredditContainer.forcePostId);
-                subredditUrl = $"/r/{m_subreddit.DisplayName}/comments/{subredditContainer.forcePostId}/.json";
-                hasEmptyRoot = true;
+                if (m_subreddit.DisplayName.ToLower() == "frontpage")
+                {
+                    // Special case for the front page
+                    postCollectionUrl = $"/{SortTypeToString(m_sortType)}/.json";
+                }
+                else if (m_subreddit.DisplayName.ToLower() == "saved")
+                {
+                    // Special case for the saved posts
+                    postCollectionUrl = $"/user/{m_baconMan.UserMan.CurrentUser.Name}/saved/.json";
+                }
+                else if (!String.IsNullOrWhiteSpace(collectorContext.forcePostId))
+                {
+                    // We are only going to try to grab one specific post. This is used by search and inbox to 
+                    // link to a post. Since we are doing so, we need to make the unique id something unique for this post so we don't get
+                    // a cache. This should match the unique id we use to look up the subreddit above.
+                    SetUniqueId(m_subreddit.Id + m_sortType + collectorContext.forcePostId);
+                    postCollectionUrl = $"/r/{m_subreddit.DisplayName}/comments/{collectorContext.forcePostId}/.json";
+                    hasEmptyRoot = true;
+                }
+                else
+                {
+                    postCollectionUrl = $"/r/{m_subreddit.DisplayName}/{SortTypeToString(m_sortType)}/.json";
+                }
             }
             else
             {
-                subredditUrl = $"/r/{m_subreddit.DisplayName}/{SortTypeToString(m_sortType)}/.json";
+                // Get posts for a user
+                postCollectionUrl = $"user/{m_user.Name}/submitted/.json";
             }
 
-            InitListHelper(subredditUrl, hasEmptyRoot, true, optionalSortTime);
+            InitListHelper(postCollectionUrl, hasEmptyRoot, true, optionalSortTime);
         }
 
         /// <summary>
@@ -388,7 +414,7 @@ namespace BaconBackend.Collectors
         /// <param name="posts">Posts to be formatted</param>
         override protected void ApplyCommonFormatting(ref List<Post> posts)
         {
-            bool isFrontPage = m_subreddit.IsArtifical || m_subreddit.DisplayName.ToLower().Equals("frontpage");
+            bool isFrontPage = m_subreddit != null && (m_subreddit.IsArtifical || m_subreddit.DisplayName.ToLower().Equals("frontpage"));
 
             foreach(Post post in posts)
             {

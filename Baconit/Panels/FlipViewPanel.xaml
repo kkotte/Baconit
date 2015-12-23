@@ -176,6 +176,12 @@
                         <TextBlock VerticalAlignment="Center"
                                    Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
                                    Text="{Binding CommentCurrentSortTypeString}" />
+                        <TextBlock Margin="3,2,0,0"
+                                   VerticalAlignment="Center"
+                                   FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                                   FontSize="10"
+                                   Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
+                                   Text=" &#xE0E5;" />
                     </StackPanel>
 
                     <!--  Comment Count Header  -->
@@ -201,6 +207,12 @@
                         <TextBlock VerticalAlignment="Center"
                                    Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
                                    Text="{Binding CurrentCommentShowingCount}" />
+                        <TextBlock Margin="3,2,0,0"
+                                   VerticalAlignment="Center"
+                                   FontFamily="{ThemeResource SymbolThemeFontFamily}"
+                                   FontSize="10"
+                                   Foreground="{ThemeResource SystemControlBackgroundAccentBrush}"
+                                   Text=" &#xE0E5;" />
                     </StackPanel>
 
                     <!--  Refresh  -->
@@ -238,8 +250,6 @@
                                 </TextBlock.RenderTransform>
                             </TextBlock>
                         </Button.Content>
-
-
                     </Button>
                 </Grid>
 
