@@ -35,6 +35,9 @@ namespace BaconBackend.DataObjects
         [JsonProperty(PropertyName = "author_flair_text")]
         public string AuthorFlairText { get; set; }
 
+        [JsonProperty(PropertyName = "subreddit")]
+        public string Subreddit { get; set; }        
+
         [JsonProperty(PropertyName = "score")]
         public int Score
         {
@@ -188,7 +191,7 @@ namespace BaconBackend.DataObjects
         {
             get
             {
-                return IsSaved ? "Unsave Comment" : "Save Comment";
+                return IsSaved ? "Unsave comment" : "Save comment";
             }
         }
 
