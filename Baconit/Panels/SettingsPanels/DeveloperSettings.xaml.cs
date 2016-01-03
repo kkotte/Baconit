@@ -55,7 +55,13 @@ namespace Baconit.Panels.SettingsPanels
             App.BaconMan.TelemetryMan.ReportEvent(this, "DevSettingsOpened");
             ui_debuggingOn.IsOn = App.BaconMan.UiSettingsMan.Developer_Debug;
             ui_preventAppCrashes.IsOn = App.BaconMan.UiSettingsMan.Developer_StopFatalCrashesAndReport;
+            ui_showMemoryOverlay.IsOn = App.BaconMan.UiSettingsMan.Developer_ShowMemoryOverlay;
             m_takeAction = true;
+        }
+
+        public void OnCleanupPanel()
+        {
+            // Ignore for now.
         }
 
         private void DebuggingOn_Toggled(object sender, RoutedEventArgs e)
@@ -74,6 +80,25 @@ namespace Baconit.Panels.SettingsPanels
                 return;
             }
             App.BaconMan.UiSettingsMan.Developer_StopFatalCrashesAndReport = ui_preventAppCrashes.IsOn;
+        }
+
+        private void ShowMemoryOverlay_Toggled(object sender, RoutedEventArgs e)
+        {
+            if(!m_takeAction)
+            {
+                return;
+            }
+            App.BaconMan.UiSettingsMan.Developer_ShowMemoryOverlay = ui_showMemoryOverlay.IsOn;
+
+            if(ui_showMemoryOverlay.IsOn)
+            {
+                App.BaconMan.MemoryMan.StartMemoryWatch();
+            }
+            else
+            {
+                App.BaconMan.MemoryMan.StopMemoryWatch();
+                App.BaconMan.MessageMan.ShowMessageSimple("Restart", "The UI will not be removed until the app is restarted.");
+            }
         }
     }
 }

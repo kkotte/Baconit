@@ -34,6 +34,10 @@ namespace Baconit
         public const string AccentColorLevel3Resource = "BaconitAccentColorLevel3Brush";
         public const string AccentColorLevel4Resource = "BaconitAccentColorLevel4Brush";
 
+        // Usage baconit://debug?preventcrashes=true
+        private const string c_protocolPreventCrashesEnabled = "preventcrashes=true";
+        private const string c_protocolPreventCrashesDisabled = "preventcrashes=false";
+
         /// <summary>
         /// The main reference in the app to the backend of Baconit
         /// </summary>
@@ -50,15 +54,24 @@ namespace Baconit
         /// </summary>
         public App()
         {
+            // Setup the exception handler first
+            this.UnhandledException += OnUnhandledException;
+
+            // Now setup the baconman
             BaconMan = new BaconManager(false);
+
+            // Now telemetry
             Microsoft.ApplicationInsights.WindowsAppInitializer.InitializeAsync(
                 Microsoft.ApplicationInsights.WindowsCollectors.Metadata |
                 Microsoft.ApplicationInsights.WindowsCollectors.UnhandledException |
                 Microsoft.ApplicationInsights.WindowsCollectors.Session);
+
+            // Init the app
             this.InitializeComponent();
+
+            // Register for events.
             this.Suspending += OnSuspending_Fired;
             this.Resuming += OnResuming_Fired;
-            this.UnhandledException += OnUnhandledException;
         }
 
         /// <summary>
@@ -74,9 +87,17 @@ namespace Baconit
                 ToastNotificationActivatedEventArgs toastArgs = (ToastNotificationActivatedEventArgs)args;
                 SetupAndALaunchApp(toastArgs.Argument);
             }
+            else if(args is ProtocolActivatedEventArgs)
+            {
+                ProtocolActivatedEventArgs protcolArgs = (ProtocolActivatedEventArgs)args;
+                string argsString = protcolArgs.Uri.OriginalString;
+                int protEnd = argsString.IndexOf("://");
+                argsString = protEnd == -1 ? argsString : argsString.Substring(protEnd + 3);
+                SetupAndALaunchApp(argsString);
+            }
             else
             {
-                SetupAndALaunchApp("");
+                SetupAndALaunchApp(String.Empty);
             }
         }
 
@@ -96,6 +117,20 @@ namespace Baconit
         /// <param name="arguments"></param>
         private void SetupAndALaunchApp(string arguments)
         {
+            // Check the args for prevent crash
+            if(!String.IsNullOrWhiteSpace(arguments))
+            {
+                string lowerArgs = arguments.ToLower();
+                if(lowerArgs.Contains(c_protocolPreventCrashesDisabled))
+                {
+                    BaconMan.UiSettingsMan.Developer_StopFatalCrashesAndReport = false;
+                }
+                else if (lowerArgs.Contains(c_protocolPreventCrashesEnabled))
+                {
+                    BaconMan.UiSettingsMan.Developer_StopFatalCrashesAndReport = true;
+                }
+            }
+
             // Grab the accent color and make our custom accent color brushes.
             if (!Current.Resources.ContainsKey(AccentColorLevel1Resource))
             {

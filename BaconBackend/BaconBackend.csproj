@@ -97,6 +97,7 @@
     <Compile Include="BaconManager.cs" />
     <Compile Include="Collectors\Collector.cs" />
     <Compile Include="Collectors\CommentCollector.cs" />
+    <Compile Include="Collectors\DeferredCollector.cs" />
     <Compile Include="Collectors\MessageCollector.cs" />
     <Compile Include="Collectors\SearchPostCollector.cs" />
     <Compile Include="Collectors\SearchSubredditCollector.cs" />
@@ -105,10 +106,10 @@
     <Compile Include="DataObjects\Message.cs" />
     <Compile Include="DataObjects\MessageOfTheDay.cs" />
     <Compile Include="DataObjects\Post.cs" />
-    <Compile Include="DataObjects\RedditGenericResponse.cs" />
     <Compile Include="DataObjects\SearchResult.cs" />
     <Compile Include="DataObjects\Subreddit.cs" />
     <Compile Include="DataObjects\User.cs" />
+    <Compile Include="Helpers\DeviceHelper.cs" />
     <Compile Include="Helpers\HashList.cs" />
     <Compile Include="Helpers\MiscellaneousHelper.cs" />
     <Compile Include="Helpers\RedditListHelper.cs" />
@@ -124,6 +125,7 @@
     <Compile Include="Managers\Background\BackgroundMessageUpdater.cs" />
     <Compile Include="Managers\CacheManager.cs" />
     <Compile Include="Managers\ImageManager.cs" />
+    <Compile Include="Managers\MemoryManager.cs" />
     <Compile Include="Managers\MessageManager.cs" />
     <Compile Include="Managers\Background\MessageOfTheDayManager.cs" />
     <Compile Include="Managers\NetworkManager.cs" />

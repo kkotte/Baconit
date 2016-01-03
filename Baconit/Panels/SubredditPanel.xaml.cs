@@ -125,9 +125,6 @@ namespace Baconit.Panels
         public void OnNavigatingFrom()
         {
             m_isVisible = false;
-
-            // Stop the snow if going
-            ui_letItSnow.AllOfTheSnowIsNowBlackSlushPlsSuspendIt();
         }
 
         public void OnNavigatingTo()
@@ -140,11 +137,18 @@ namespace Baconit.Panels
                 m_collector.Update();
             }
 
-            // Resume the snow if it was going
-            ui_letItSnow.OkNowIWantMoreSnowIfItHasBeenStarted();
-
             // Set the task bar color
             m_host.SetStatusBar(Color.FromArgb(255,10,10,10));
+        }
+
+        public void OnCleanupPanel()
+        {
+            if(m_collector != null)
+            {
+                // Remove the listeners so we won't get updates.
+                m_collector.OnCollectorStateChange -= Collector_OnCollectorStateChange;
+                m_collector.OnCollectionUpdated -= Collector_OnCollectionUpdated;
+            }
         }
 
         #region Subreddit Setup
@@ -490,7 +494,7 @@ namespace Baconit.Panels
 
         private void ViewUser_Click(object sender, RoutedEventArgs e)
         {
-            // Get the post 
+            // Get the post
             Post post = (sender as FrameworkElement).DataContext as Post;
             Dictionary<string, object> args = new Dictionary<string, object>();
             args.Add(PanelManager.NAV_ARGS_USER_NAME, post.Author);
@@ -824,9 +828,6 @@ namespace Baconit.Panels
         {
             // Kick off an update.
             m_collector.Update(true);
-
-            // Why not.
-            ui_letItSnow.MakeItSnow();
         }
 
         /// <summary>
@@ -842,11 +843,6 @@ namespace Baconit.Panels
             // resizing when we hit the actualwidth.
             double panelSize = ui_splitView.ActualWidth - 10 < 380 ? ui_splitView.ActualWidth - 10 : 380;
             ui_splitView.OpenPaneLength = panelSize;
-        }
-
-        private void MenuFlyoutItem_Click(object sender, RoutedEventArgs e)
-        {
-
         }
     }
 }

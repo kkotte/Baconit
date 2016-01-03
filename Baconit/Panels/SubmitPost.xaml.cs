@@ -109,6 +109,11 @@ namespace Baconit.Panels
             OnNavigatingTo();
         }
 
+        public void OnCleanupPanel()
+        {
+            // Ignore for now.
+        }
+
         #region Selftext
 
         /// <summary>
@@ -388,10 +393,9 @@ namespace Baconit.Panels
                 App.BaconMan.MessageMan.ShowMessageSimple("Say Something...", "You can't submit a post with out a title.");
                 return;
             }
-            if (String.IsNullOrWhiteSpace(urlOrMarkdownText))
+            if (String.IsNullOrWhiteSpace(urlOrMarkdownText) && !isSelfText)
             {
-                string type = isSelfText ? "text" : "link";
-                App.BaconMan.MessageMan.ShowMessageSimple("Say Something...", $"You can't submit a post with no {type}.");
+                App.BaconMan.MessageMan.ShowMessageSimple("Say Something...", $"You can't submit a post with no link.");
                 return;
             }
             if(!isSelfText && urlOrMarkdownText.IndexOf(' ') != -1)
@@ -436,37 +440,37 @@ namespace Baconit.Panels
 
                 switch(response.RedditError)
                 {
-                    case SubmiteNewPostErrors.ALREADY_SUB:
+                    case SubmitNewPostErrors.ALREADY_SUB:
                         message = "That link has already been submitted";
                         break;
-                    case SubmiteNewPostErrors.BAD_CAPTCHA:
+                    case SubmitNewPostErrors.BAD_CAPTCHA:
                         message = "You need to provide a CAPTCHA to post. Baconit currently doesn't support CAPTCHA so you will have to post this from your desktop. After a few post try from Baconit again. Sorry about that.";
                         break;
-                    case SubmiteNewPostErrors.DOMAIN_BANNED:
+                    case SubmitNewPostErrors.DOMAIN_BANNED:
                         message = "The domain of this link has been banned for spam.";
                         break;
-                    case SubmiteNewPostErrors.IN_TIMEOUT:
-                    case SubmiteNewPostErrors.RATELIMIT:
+                    case SubmitNewPostErrors.IN_TIMEOUT:
+                    case SubmitNewPostErrors.RATELIMIT:
                         message = "You have posted too much recently, please wait a while before posting again.";
                         break;
-                    case SubmiteNewPostErrors.NO_LINKS:
+                    case SubmitNewPostErrors.NO_LINKS:
                         message = "This subreddit only allows self text, you can't post links to it.";
                         break;
-                    case SubmiteNewPostErrors.NO_SELFS:
+                    case SubmitNewPostErrors.NO_SELFS:
                         message = "This subreddit only allows links, you can't post self text to it.";
                         break;
-                    case SubmiteNewPostErrors.SUBREDDIT_NOEXIST:
+                    case SubmitNewPostErrors.SUBREDDIT_NOEXIST:
                         message = "The subreddit your trying to post to doesn't exist.";
                         break;
-                    case SubmiteNewPostErrors.SUBREDDIT_NOTALLOWED:
+                    case SubmitNewPostErrors.SUBREDDIT_NOTALLOWED:
                         message = "Your not allowed to post to the subreddit you selected.";
                         break;
-                    case SubmiteNewPostErrors.BAD_URL:
+                    case SubmitNewPostErrors.BAD_URL:
                         message = "Your URL is invalid, please make sure it is correct.";
                         break;
                     default:
-                    case SubmiteNewPostErrors.INVALID_OPTION:
-                    case SubmiteNewPostErrors.SUBREDDIT_REQUIRED:
+                    case SubmitNewPostErrors.INVALID_OPTION:
+                    case SubmitNewPostErrors.SUBREDDIT_REQUIRED:
                         title = "Something Went Wrong";
                         message = "We can't post for you right now, check your Internet connection.";
                         break;
